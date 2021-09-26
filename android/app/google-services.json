@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "253819678729",
+    "project_id": "doctorzone-cf8bc",
+    "storage_bucket": "doctorzone-cf8bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:253819678729:android:9a6945d74aad3b606a88d8",
+        "android_client_info": {
+          "package_name": "com.example.doctorzone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "253819678729-75nsd4ovi52o4h8gbdc1hd5a9gktvii0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.doctorzone",
+            "certificate_hash": "89d4564a4d7c22c8c691f7fd942cbf72a5580b75"
+          }
+        },
+        {
+          "client_id": "253819678729-2ej7fujrcf57nh4e2416l17c9uh65vk8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJxayOPHfyJjgZhqt2Y9QqK1kfxaRQpCg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "253819678729-2ej7fujrcf57nh4e2416l17c9uh65vk8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
