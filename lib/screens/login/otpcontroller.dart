@@ -2,6 +2,7 @@ import 'package:doctorzone/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class OtpController extends StatefulWidget {
   const OtpController({Key? key, required this.phone, required this.contCode}) : super(key: key);
@@ -19,6 +20,9 @@ class _OtpControllerState extends State<OtpController> {
   final TextEditingController _pinEditingController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   String? verificationCode;
+  final storage = new FlutterSecureStorage();
+
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   final BoxDecoration pinOtpDecoration = BoxDecoration(
     color: Colors.blueAccent,
@@ -38,9 +42,11 @@ class _OtpControllerState extends State<OtpController> {
     await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: "${widget.contCode + widget.phone}",
         verificationCompleted: (PhoneAuthCredential credential) async{
-          await FirebaseAuth.instance.signInWithCredential(credential).then((value){
+          await FirebaseAuth.instance.signInWithCredential(credential).then((value) async{
             if(value.user != null){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const Home()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>const Home()));
+              User ? userCredential = auth.currentUser;
+              await storage.write(key: 'uid', value: userCredential!.uid);
             }
           });
         },
@@ -86,7 +92,7 @@ class _OtpControllerState extends State<OtpController> {
             padding: const EdgeInsets.all(20.0),
             child: PinPut(
               fieldsCount: 6,
-              textStyle: TextStyle(fontSize: 25, color: Colors.white54),
+              textStyle: const TextStyle(fontSize: 25, color: Colors.white54),
               eachFieldWidth: 40.0,
               eachFieldHeight: 50.0,
               focusNode: _focusNode,
@@ -98,9 +104,11 @@ class _OtpControllerState extends State<OtpController> {
               onSubmit: (pin) async{
                 try{
                   await FirebaseAuth.instance.signInWithCredential(PhoneAuthProvider.credential(
-                      verificationId: verificationCode!, smsCode: pin)).then((value) {
+                      verificationId: verificationCode!, smsCode: pin)).then((value) async{
                         if(value.user != null){
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const Home()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>const Home()));
+                          User ? userCredential = auth.currentUser;
+                          await storage.write(key: 'uid', value: userCredential!.uid);
                         }
                   });
                 }catch(err){

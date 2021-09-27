@@ -1,11 +1,13 @@
-import 'package:doctorzone/screens/login/googlesign.dart';
+import 'package:doctorzone/screens/home.dart';
 import 'package:doctorzone/screens/login/otpcontroller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({Key? key}) : super(key: key);
@@ -17,6 +19,34 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   String contCode = "+91";
+  final storage = new FlutterSecureStorage();
+
+  final googleSignIn = GoogleSignIn();
+
+  late GoogleSignInAccount _user;
+  GoogleSignInAccount get user => _user;
+
+  Future googleLogin() async {
+    try {
+      final googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) return;
+      _user = googleUser;
+
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      User? p = FirebaseAuth.instance.currentUser;
+      await storage.write(key: 'uid', value: p!.uid);
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +117,11 @@ class _StartScreenState extends State<StartScreen> {
                       ),
                     ),
                     child: ListView(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 20.0),
                       children: [
                         CountryCodePicker(
-                          onChanged: (country){
+                          onChanged: (country) {
                             setState(() {
                               contCode = country.dialCode!;
                             });
@@ -104,7 +135,7 @@ class _StartScreenState extends State<StartScreen> {
                             border: const OutlineInputBorder(),
                             hintText: "Enter Your No.",
                             prefix: Padding(
-                                padding: const EdgeInsets.all(2.0),
+                              padding: const EdgeInsets.all(2.0),
                               child: Text(contCode),
                             ),
                             icon: const Icon(
@@ -136,8 +167,13 @@ class _StartScreenState extends State<StartScreen> {
                           ),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>
-                                  OtpController(phone: _textEditingController.text,contCode: contCode,)));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => OtpController(
+                                            phone: _textEditingController.text,
+                                            contCode: contCode,
+                                          )));
                             },
                             child: const Text(
                               "Continue",
@@ -177,9 +213,9 @@ class _StartScreenState extends State<StartScreen> {
                                 const BorderRadius.all(Radius.circular(15.0)),
                           ),
                           child: TextButton(
-                            onPressed: () {
-                              final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
-                              provider.googleLogin();
+                            onPressed: () async{
+                              await googleLogin();
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=> Home()));
                             },
                             child: const Text(
                               "Login With E-Mail",

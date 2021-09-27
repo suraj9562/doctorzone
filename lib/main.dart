@@ -1,9 +1,8 @@
-import 'package:doctorzone/screens/login/googleprocessingscreen.dart';
-import 'package:doctorzone/screens/login/googlesign.dart';
+import 'package:doctorzone/screens/home.dart';
 import 'package:doctorzone/screens/login/startscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,22 +10,48 @@ void main() async{
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final storage = new FlutterSecureStorage();
+
+  Future<bool> checkLogin() async{
+    String? value = await storage.read(key: 'uid');
+    if(value == null){
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context){
-    
-    return ChangeNotifierProvider(
-      create: (BuildContext context) => GoogleSignInProvider(),
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const GoogleProcessingScreen(),
+
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: FutureBuilder(
+          future: checkLogin(),
+          builder:(BuildContext context, AsyncSnapshot<bool> snapshot ){
+            if(snapshot.data==false){
+              return StartScreen();
+            }
+            else if(snapshot.connectionState == ConnectionState.waiting){
+              return Container(
+                color: Colors.grey,
+                child: CircularProgressIndicator(),
+              );
+            }
+            return Home();
+          }
+      ),
+
     );
   }
 }
