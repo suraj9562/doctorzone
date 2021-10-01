@@ -1,5 +1,5 @@
 import 'package:doctorzone/screens/login/startscreen.dart';
-import 'package:doctorzone/screens/profile.dart';
+import 'package:doctorzone/screens/userprofile/profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
