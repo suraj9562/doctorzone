@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,6 +15,33 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  String uid  = FirebaseAuth.instance.currentUser!.uid;
+
+  String name = "Loading....";
+  String email = "Loading....";
+
+  void getDataInitial() async{
+    await FirebaseFirestore.instance
+        .collection('/users')
+        .doc(uid)
+        .collection('/personalInfo')
+        .get()
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((result) {
+        setState(() {
+          name = result['name'];
+          email = result['email'];
+        });
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDataInitial();
+  }
 
   final storage = new FlutterSecureStorage();
   final googleSignIn = GoogleSignIn();
@@ -34,27 +62,27 @@ class _HomeState extends State<Home> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const UserAccountsDrawerHeader(
-              accountName: Text("Abc"),
-              accountEmail: Text("Abc"),
+            UserAccountsDrawerHeader(
+              accountName: Text(name),
+              accountEmail: Text(email),
               currentAccountPicture: CircleAvatar(
                 child: Text(
-                  "A",
-                  style: TextStyle(
+                  name[0],
+                  style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 25),
                 ),
                 backgroundColor: Colors.black45,
               ),
-              decoration: BoxDecoration(color: Colors.amber),
+              decoration: const BoxDecoration(color: Colors.amber),
             ),
             ListTile(
               leading: const Icon(Icons.account_circle_outlined),
               title: const Text("Profile"),
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Profile()));
+                    MaterialPageRoute(builder: (context) => Profile(name: name, email: email,)));
               },
             ),
             const Divider(),
@@ -64,7 +92,7 @@ class _HomeState extends State<Home> {
               onTap: () {
                 logOut();
                 storage.delete(key: 'uid');
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>StartScreen()), (route) => false);
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const StartScreen()), (route) => false);
               },
             )
           ],

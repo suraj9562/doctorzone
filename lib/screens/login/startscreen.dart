@@ -1,3 +1,4 @@
+import 'package:doctorzone/screens/db/usermanagement.dart';
 import 'package:doctorzone/screens/home.dart';
 import 'package:doctorzone/screens/login/otpcontroller.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,6 +42,7 @@ class _StartScreenState extends State<StartScreen> {
       await FirebaseAuth.instance.signInWithCredential(credential);
       User? p = FirebaseAuth.instance.currentUser;
       await storage.write(key: 'uid', value: p!.uid);
+      await setUserByEmail(p.email.toString(), p.displayName.toString());
     } catch (e) {
       // ignore: avoid_print
       print(e.toString());
@@ -138,7 +140,7 @@ class _StartScreenState extends State<StartScreen> {
                               padding: const EdgeInsets.all(2.0),
                               child: Text(contCode),
                             ),
-                            icon: const Icon(
+                            prefixIcon: const Icon(
                               Icons.contact_phone_outlined,
                             ),
                           ),
@@ -167,7 +169,7 @@ class _StartScreenState extends State<StartScreen> {
                           ),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => OtpController(
@@ -215,7 +217,7 @@ class _StartScreenState extends State<StartScreen> {
                           child: TextButton(
                             onPressed: () async{
                               await googleLogin();
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=> Home()));
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Home()));
                             },
                             child: const Text(
                               "Login With E-Mail",

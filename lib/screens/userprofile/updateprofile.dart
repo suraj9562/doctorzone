@@ -1,3 +1,5 @@
+import 'package:doctorzone/screens/db/usermanagement.dart';
+import 'package:doctorzone/screens/home.dart';
 import 'package:flutter/material.dart';
 
 class TakeInfo extends StatefulWidget {
@@ -9,14 +11,14 @@ class TakeInfo extends StatefulWidget {
 
 class _TakeInfoState extends State<TakeInfo> {
 
-  TextEditingController _name = TextEditingController();
-  TextEditingController _phone = TextEditingController();
-  TextEditingController _email = TextEditingController();
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _phone = TextEditingController();
+  final TextEditingController _email = TextEditingController();
 
   List<DropdownMenuItem<String>> get dropdownItems{
     List<DropdownMenuItem<String>> menuItems = [
-      DropdownMenuItem(child: Text("Male"),value: "Male"),
-      DropdownMenuItem(child: Text("Female"),value: "Female"),
+      const DropdownMenuItem(child: Text("Male"),value: "Male"),
+      const DropdownMenuItem(child: Text("Female"),value: "Female"),
     ];
     return menuItems;
   }
@@ -26,18 +28,18 @@ class _TakeInfoState extends State<TakeInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Update Profile Info"),
+        title: const Text("Update Profile Info"),
       ),
       body: SafeArea(
         child: ListView(
-          padding: EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 20),
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment:  CrossAxisAlignment.center,
               children: [
                 Container(
-                  padding: EdgeInsets.all(15),
+                  padding:const EdgeInsets.all(15),
                   child: TextFormField(
                     controller: _name,
                     decoration: const InputDecoration(
@@ -50,7 +52,7 @@ class _TakeInfoState extends State<TakeInfo> {
                     textInputAction: TextInputAction.next,
                   ),
                 ),
-                SizedBox(height:5),
+                const SizedBox(height:5),
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: DropdownButtonFormField(
@@ -73,9 +75,9 @@ class _TakeInfoState extends State<TakeInfo> {
                       },
                       items: dropdownItems),
                 ),
-                SizedBox(height: 5,),
+               const SizedBox(height: 5,),
                 Container(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   child: TextFormField(
                     controller: _phone,
                     decoration: const InputDecoration(
@@ -89,9 +91,9 @@ class _TakeInfoState extends State<TakeInfo> {
                     textInputAction: TextInputAction.next,
                   ),
                 ),
-                SizedBox(height:5),
+               const SizedBox(height:5),
                 Container(
-                  padding : EdgeInsets.all(15),
+                  padding : const EdgeInsets.all(15),
                   child: TextFormField(
                     controller: _email,
                     decoration: const InputDecoration(
@@ -105,7 +107,7 @@ class _TakeInfoState extends State<TakeInfo> {
                     textInputAction: TextInputAction.done,
                   ),
                 ),
-                SizedBox(height: 20.0,),
+               const SizedBox(height: 20.0,),
                 Container(
                   height: 50,
                   width: double.infinity,
@@ -118,10 +120,11 @@ class _TakeInfoState extends State<TakeInfo> {
                     borderRadius: BorderRadius.all(Radius.circular(20))
                   ),
                   child: TextButton(
-                    onPressed: (){
-                      print([_name.text, _phone.text, _email.text, selectedValue]);
+                    onPressed: () async{
+                      await setUserByMobile(_name.text, _phone.text, _email.text, selectedValue.toString());
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Home()));
                     },
-                    child: Text("Apply Changes"),
+                    child: const Text("Proceed"),
                   ),
                 ),
               ],

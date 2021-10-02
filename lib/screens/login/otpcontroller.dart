@@ -1,4 +1,4 @@
-import 'package:doctorzone/screens/home.dart';
+import 'package:doctorzone/screens/userprofile/updateprofile.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,7 +44,7 @@ class _OtpControllerState extends State<OtpController> {
         verificationCompleted: (PhoneAuthCredential credential) async{
           await FirebaseAuth.instance.signInWithCredential(credential).then((value) async{
             if(value.user != null){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>const Home()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const TakeInfo()));
               User ? userCredential = auth.currentUser;
               await storage.write(key: 'uid', value: userCredential!.uid);
             }
@@ -106,7 +106,7 @@ class _OtpControllerState extends State<OtpController> {
                   await FirebaseAuth.instance.signInWithCredential(PhoneAuthProvider.credential(
                       verificationId: verificationCode!, smsCode: pin)).then((value) async{
                         if(value.user != null){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>const Home()));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const TakeInfo()));
                           User ? userCredential = auth.currentUser;
                           await storage.write(key: 'uid', value: userCredential!.uid);
                         }
